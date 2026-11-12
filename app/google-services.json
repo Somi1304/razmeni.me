@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866827893589",
+    "project_id": "razmeni-me-84582",
+    "storage_bucket": "razmeni-me-84582.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866827893589:android:84d65c833bd2a672cb4ddc",
+        "android_client_info": {
+          "package_name": "me.razmeni"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADclCIWoCQiP-0gPThXF222UrRuW49htQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
