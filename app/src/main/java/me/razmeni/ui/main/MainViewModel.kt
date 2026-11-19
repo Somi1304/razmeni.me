@@ -249,6 +249,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         act("Ubačene su demo menjačnice") { seedDemoData() }
     }
 
+    fun deleteAllExchanges() {
+        act("Obrisane su sve menjačnice") { ExchangeRepo.deleteAll() }
+    }
+
     private fun act(message: String, onDone: () -> Unit = {}, block: suspend () -> Unit) {
         viewModelScope.launch {
             busy = true

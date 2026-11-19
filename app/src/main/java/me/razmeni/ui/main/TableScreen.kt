@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,12 +51,31 @@ fun TableScreen(vm: MainViewModel, onExchangeClick: (String) -> Unit) {
         EmptyTable(busy = vm.busy, onSeed = vm::seedDemo)
     } else {
         Column(Modifier.fillMaxSize()) {
-            Text(
-                text = "Prikazano ${visible.size} od ${all.size}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Prikazano ${visible.size} od ${all.size}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = vm::seedDemo, enabled = !vm.busy) {
+                        Text("Ubaci demo")
+                    }
+                    Button(
+                        onClick = vm::deleteAllExchanges,
+                        enabled = !vm.busy,
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Obriši sve")
+                    }
+                }
+            }
             HeaderRow(sort, onSellClick = vm::sortBySell, onDistanceClick = vm::sortByDistance)
             LazyColumn(Modifier.fillMaxSize()) {
                 itemsIndexed(visible, key = { _, exchange -> exchange.id }) { index, exchange ->

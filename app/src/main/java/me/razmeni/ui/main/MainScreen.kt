@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import me.razmeni.data.AuthRepo
 import me.razmeni.data.Filters
@@ -118,27 +121,42 @@ fun MainScreen(
             }
         }
     ) { padding ->
-        Column(
+        Box(
             Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            if (tab != 2) {
-                SearchRow(
-                    query = filters.query,
-                    onQueryChange = vm::setQuery,
-                    activeFilters = filters.activeCount(),
-                    onFiltersClick = { showFilters = true }
-                )
-            }
             when (tab) {
-                0 -> if (locationGranted) {
-                    MapScreen(visible, location, onExchangeClick)
-                } else {
-                    LocationDenied(onAllow = { permissionLauncher.launch(PERMISSIONS) })
+                0 -> {
+                    if (locationGranted) {
+                        MapScreen(visible, location, onExchangeClick)
+                    } else {
+                        LocationDenied(onAllow = { permissionLauncher.launch(PERMISSIONS) })
+                    }
+                    SearchRow(
+                        query = filters.query,
+                        onQueryChange = vm::setQuery,
+                        activeFilters = filters.activeCount(),
+                        onFiltersClick = { showFilters = true },
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .zIndex(1f)
+                    )
                 }
-                1 -> TableScreen(vm, onExchangeClick)
-                2 -> LeaderboardScreen(users, myUid, onLogout)
+                1 -> {
+                    Column(Modifier.fillMaxSize()) {
+                        SearchRow(
+                            query = filters.query,
+                            onQueryChange = vm::setQuery,
+                            activeFilters = filters.activeCount(),
+                            onFiltersClick = { showFilters = true }
+                        )
+                        TableScreen(vm, onExchangeClick)
+                    }
+                }
+                2 -> {
+                    LeaderboardScreen(users, myUid, onLogout)
+                }
             }
         }
     }
@@ -163,10 +181,11 @@ private fun SearchRow(
     query: String,
     onQueryChange: (String) -> Unit,
     activeFilters: Int,
-    onFiltersClick: () -> Unit
+    onFiltersClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -179,6 +198,10 @@ private fun SearchRow(
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             singleLine = true,
             shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            ),
             modifier = Modifier.weight(1f)
         )
         Spacer(Modifier.width(8.dp))

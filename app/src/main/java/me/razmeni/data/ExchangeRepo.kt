@@ -49,8 +49,14 @@ object ExchangeRepo {
                 "authorUsername" to AuthRepo.currentUsername,
                 "createdAt" to FieldValue.serverTimestamp(),
                 "lastInteractionAt" to FieldValue.serverTimestamp(),
-                "ratings" to emptyMap<String, Long>(),
-                "comments" to emptyList<Any>(),
+                "ratings" to exchange.ratings,
+                "comments" to exchange.comments.map {
+                    mapOf(
+                        "authorUsername" to it.authorUsername,
+                        "text" to it.text,
+                        "createdAt" to (it.createdAt ?: Timestamp.now())
+                    )
+                },
                 "visitedBy" to emptyList<String>()
             )
         )
@@ -77,5 +83,14 @@ object ExchangeRepo {
             "createdAt" to Timestamp.now()
         )
         interact(exchangeId, mapOf("comments" to FieldValue.arrayUnion(comment)), POINTS_COMMENT)
+    }
+
+    suspend fun deleteAll() {
+        val snapshot = exchanges.get().await()
+        snapshot.documents.chunked(500).forEach { chunk ->
+            val batch = db.batch()
+            chunk.forEach { doc -> batch.delete(doc.reference) }
+            batch.commit().await()
+        }
     }
 }
